@@ -21,10 +21,15 @@ export default function SetAvatar() {
     theme: "dark",
   };
 
-  useEffect(async () => {
-    if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
-      navigate("/login");
-  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
+        navigate("/login");
+    };
+  
+    fetchData(); // Call the async function immediately
+  
+  }, [navigate]);
 
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
@@ -52,18 +57,28 @@ export default function SetAvatar() {
     }
   };
 
-  useEffect(async () => {
-    const data = [];
-    for (let i = 0; i < 4; i++) {
-      const image = await axios.get(
-        `${api}/${Math.round(Math.random() * 1000)}`
-      );
-      const buffer = new Buffer(image.data);
-      data.push(buffer.toString("base64"));
-    }
-    setAvatars(data);
-    setIsLoading(false);
-  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      const newData = [];
+      try {
+        for (let i = 0; i < 4; i++) {
+          const image = await axios.get(
+            `${api}/${Math.round(Math.random() * 1000)}`
+          );
+          const buffer = Buffer.from(image.data, "base64");
+          newData.push(buffer.toString("base64"));
+        }
+        setAvatars(newData);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    fetchData(); // Call the async function immediately
+  
+  }, [api]);
+  
   return (
     <>
       {isLoading ? (

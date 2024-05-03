@@ -22,15 +22,15 @@ export default function SetAvatar() {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY))
+    const checkLocalStorage = () => {
+      if (!localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)) {
         navigate("/login");
+      }
     };
   
-    fetchData(); // Call the async function immediately
-  
+    checkLocalStorage();
   }, [navigate]);
-
+  
   const setProfilePicture = async () => {
     if (selectedAvatar === undefined) {
       toast.error("Please select an avatar", toastOptions);
@@ -57,27 +57,39 @@ export default function SetAvatar() {
     }
   };
 
+  // useEffect(async () => {
+  //   const data = [];
+  //   for (let i = 0; i < 4; i++) {
+  //     const image = await axios.get(
+  //       `${api}/${Math.round(Math.random() * 1000)}`
+  //     );
+  //     const buffer = new Buffer(image.data);
+  //     data.push(buffer.toString("base64"));
+  //   }
+  //   setAvatars(data);
+  //   setIsLoading(false);
+  // }, [api]);
   useEffect(() => {
     const fetchData = async () => {
-      const newData = [];
       try {
+        const data = [];
         for (let i = 0; i < 4; i++) {
           const image = await axios.get(
             `${api}/${Math.round(Math.random() * 1000)}`
           );
-          const buffer = Buffer.from(image.data, "base64");
-          newData.push(buffer.toString("base64"));
+          const buffer = Buffer.from(image.data);
+          data.push(buffer.toString("base64"));
         }
-        setAvatars(newData);
+        setAvatars(data);
         setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching avatars:", error);
+        setIsLoading(false); // Ensure isLoading is set to false even in case of an error
       }
     };
   
-    fetchData(); // Call the async function immediately
-  
-  }, [api]);
+    fetchData();
+  }, [api, setAvatars, setIsLoading]);
   
   return (
     <>

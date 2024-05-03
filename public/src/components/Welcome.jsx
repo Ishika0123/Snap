@@ -3,13 +3,23 @@ import styled from "styled-components";
 import Robot from "../assets/robot.gif";
 export default function Welcome() {
   const [userName, setUserName] = useState("");
-  useEffect(async () => {
-    setUserName(
-      await JSON.parse(
-        localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
-      ).username
-    );
-  }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await JSON.parse(
+          localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+        );
+        if (data && data.username) {
+          setUserName(data.username);
+        }
+      } catch (error) {
+        // Handle error if any
+        console.error("Error fetching data:", error);
+      }
+    };
+  
+    fetchData();
+  }, [setUserName]);
   return (
     <Container>
       <img src={Robot} alt="" />
